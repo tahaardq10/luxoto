@@ -16,96 +16,63 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
-// ELEMENTLER
-const mainAds = document.getElementById('main-ads');
-const sideAds = document.getElementById('side-ads');
-
-// MODAL AÇ/KAPA (Global window nesnesine ekliyoruz çünkü modül kullanıyoruz)
+// MODALLARI PENCEREYE TANITMA
 window.openModal = (id) => document.getElementById(id).style.display = 'flex';
 window.closeModal = (id) => document.getElementById(id).style.display = 'none';
 
-function showStatus(text) {
-    const box = document.getElementById('status-box');
-    document.getElementById('status-text').innerText = text;
-    box.style.display = 'flex';
-    setTimeout(() => box.style.display = 'none', 2500);
-}
-
-// GOOGLE İLE GİRİŞ
-document.getElementById('googleLoginBtn').onclick = async () => {
-    try {
-        await signInWithPopup(auth, provider);
-        closeModal('login-modal');
-        showStatus("Google ile giriş başarılı!");
-    } catch (error) {
-        console.error(error);
-        alert("Giriş başarısız!");
-    }
-};
-
-// OTURUM DURUMU KONTROLÜ
+// OTURUM DURUMU
 onAuthStateChanged(auth, (user) => {
-    if (user) {
-        document.getElementById('auth-section').style.display = 'none';
-        document.getElementById('user-section').style.display = 'flex';
-    } else {
-        document.getElementById('auth-section').style.display = 'flex';
-        document.getElementById('user-section').style.display = 'none';
-    }
+    document.getElementById('auth-section').style.display = user ? 'none' : 'block';
+    document.getElementById('user-section').style.display = user ? 'block' : 'none';
 });
 
-// İLAN YAYINLA (Firebase Firestore'a Kaydetme)
+// GOOGLE GİRİŞ
+document.getElementById('googleLoginBtn').onclick = () => {
+    signInWithPopup(auth, provider).then(() => closeModal('login-modal'));
+};
+
+// ÇIKIŞ
+document.getElementById('logoutBtn').onclick = () => signOut(auth);
+
+// İLANLARI GETİR
+async function loadAds() {
+    const grid = document.getElementById('main-ads');
+    grid.innerHTML = "Yükleniyor...";
+    const q = query(collection(db, "ads"), orderBy("createdAt", "desc"));
+    const snap = await getDocs(q);
+    grid.innerHTML = "";
+    snap.forEach(doc => {
+        const ad = doc.data();
+        grid.innerHTML += `
+            <div class="ilan-card">
+                <img src="${ad.img}">
+                <div class="ilan-card-info">
+                    <h4 style="color:var(--sari)">${ad.brand} ${ad.model}</h4>
+                    <p>${ad.year} | ${ad.km} KM</p>
+                </div>
+            </div>`;
+    });
+}
+
+// İLAN VER
 document.getElementById('postAdBtn').onclick = async () => {
     const brand = document.getElementById('car-brand').value;
-    const model = document.getElementById('car-model').value;
     const file = document.getElementById('car-img').files[0];
-
-    if(!brand || !file) return alert("Eksik bilgi!");
+    if(!brand || !file) return alert("Eksik Bilgi!");
 
     const reader = new FileReader();
     reader.onload = async (e) => {
-        const adData = {
-            brand,
-            model,
+        await addDoc(collection(db, "ads"), {
+            brand, model: document.getElementById('car-model').value,
             year: document.getElementById('car-year').value,
             km: document.getElementById('car-km').value,
             img: e.target.result,
-            phone: auth.currentUser.email, // Şimdilik maili alıyoruz
             createdAt: Date.now()
-        };
-        await addDoc(collection(db, "ads"), adData);
-        showStatus("İlan başarıyla yüklendi!");
+        });
         closeModal('add-ad-modal');
-        fetchAds();
+        loadAds();
     };
     reader.readAsDataURL(file);
 };
 
-// İLANLARI ÇEK
-async function fetchAds() {
-    mainAds.innerHTML = '';
-    const q = query(collection(db, "ads"), orderBy("createdAt", "desc"));
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
-        const ad = doc.data();
-        const card = `
-            <div class="ilan-card" onclick="showAdDetail('${ad.brand} ${ad.model}', '${ad.img}', '${ad.year}', '${ad.km}')">
-                <img src="${ad.img}">
-                <div style="padding:10px;">
-                    <h4 style="color:var(--sari);">${ad.brand} ${ad.model}</h4>
-                    <p>${ad.year} | ${ad.km} KM</p>
-                </div>
-            </div>
-        `;
-        mainAds.innerHTML += card;
-    });
-}
-
-window.showAdDetail = (title, img, year, km) => {
-    document.getElementById('det-title').innerText = title;
-    document.getElementById('det-img').src = img;
-    document.getElementById('det-specs').innerHTML = `<div><b>Yıl:</b> ${year}</div><div><b>KM:</b> ${km}</div>`;
-    openModal('detail-modal');
-};
-
-fetchAds();
+loadAds();
