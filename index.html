@@ -1,15 +1,16 @@
+<!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>luxOTO | Premium Araç İlanları</title>
+    <title>luxOTO | Premium</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
     <div id="status-box">
-        <i id="status-icon" class="fas fa-check-circle"></i>
-        <span id="status-text">İşlem Başarılı!</span>
+        <span id="status-text"></span>
     </div>
 
     <header>
@@ -19,82 +20,56 @@
                 <a href="https://instagram.com/taha.bozdemir10" target="_blank"><i class="fab fa-instagram"></i></a>
                 <a href="https://wa.me/905526085730" target="_blank"><i class="fab fa-whatsapp"></i></a>
             </div>
-            <div class="auth-btns" id="auth-section">
+            <div id="auth-section">
                 <button class="btn btn-yellow" onclick="openModal('login-modal')">Giriş Yap</button>
-                <button class="btn btn-orange" onclick="openModal('signup-modal')">Kaydol</button>
             </div>
-            <div class="auth-btns" id="user-section" style="display: none;">
-                <button class="btn btn-orange" onclick="checkAuthForAd()">+ İlan Ver</button>
-                <button class="btn btn-yellow" onclick="openModal('profile-modal')">Profilim</button>
+            <div id="user-section" style="display: none;">
+                <button class="btn btn-orange" onclick="openModal('add-ad-modal')">+ İlan Ver</button>
+                <button id="logoutBtn" class="btn btn-yellow">Çıkış</button>
             </div>
         </div>
     </header>
 
     <div class="container">
-        <aside class="sidebar-left">
+        <aside class="sidebar">
             <h3>Markalar</h3>
-            <ul class="brand-list" id="brand-filters">
+            <ul id="brand-filters" class="brand-list">
                 <li onclick="location.reload()">Tüm İlanlar</li>
             </ul>
         </aside>
-        <main class="content-main">
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Marka veya model ara...">
-            </div>
-            <div class="ilan-grid" id="main-ads"></div>
+
+        <main class="main-content">
+            <input type="text" id="searchInput" class="search-bar" placeholder="Araba ara...">
+            <div id="main-ads" class="ilan-grid">
+                </div>
         </main>
-        <aside class="sidebar-right">
-            <h3 style="color: var(--sari); margin-bottom: 15px; text-align: center;">Öne Çıkanlar</h3>
-            <div id="side-ads"></div>
-        </aside>
     </div>
 
     <footer>
-        <div style="margin-bottom: 15px;"><i class="fas fa-map-marker-alt"></i> Şehir: Balıkesir</div>
-        <div class="footer-names">
-            Taha Arda Bozdemir <span>|</span> Muhammed Fettah Karaaslan <span>|</span> <b>Kağan Arda Sargın</b>
-        </div>
+        <div class="footer-names">Taha Arda Bozdemir | Muhammed Fettah Karaaslan | <b>Kağan Arda Sargın</b></div>
+        <p>Balıkesir, 2026</p>
     </footer>
 
     <div class="modal-overlay" id="login-modal">
-        <div class="modal-content auth-modal">
-            <span class="close-btn" onclick="closeModal('login-modal')">&times;</span>
-            <h2>Giriş Yap</h2>
-            <div class="form-group"><input type="email" id="login-email" placeholder="E-posta"></div>
-            <div class="form-group"><input type="password" id="login-pass" placeholder="Şifre"></div>
-            <button class="btn btn-orange" style="width:100%;" id="loginBtn">Giriş Yap</button>
-            <div class="divider">VEYA</div>
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('login-modal')">&times;</span>
+            <h2>luxOTO Giriş</h2>
             <button class="btn google-btn" id="googleLoginBtn">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" width="18"> Google ile Giriş
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" width="20"> Google ile Giriş
             </button>
         </div>
     </div>
 
     <div class="modal-overlay" id="add-ad-modal">
-        <div class="modal-content" style="width: 600px;">
-            <span class="close-btn" onclick="closeModal('add-ad-modal')">&times;</span>
-            <h2 style="color:var(--sari);">Yeni İlan Ver</h2>
-            <div class="ad-form-grid">
-                <input type="text" id="car-brand" placeholder="Marka">
-                <input type="text" id="car-model" placeholder="Model">
-                <input type="number" id="car-year" placeholder="Yıl">
-                <input type="number" id="car-km" placeholder="Kilometre">
-                <select id="car-status"><option value="Sıfır">Sıfır</option><option value="İkinci El">İkinci El</option></select>
-                <input type="text" id="car-damage" placeholder="Hasar Kaydı">
-                <input type="text" id="car-hp" placeholder="Motor Gücü">
-                <input type="file" id="car-img" accept="image/*">
-            </div>
-            <button class="btn btn-orange" style="width:100%; margin-top:20px;" id="postAdBtn">İlanı Yayınla</button>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="detail-modal">
-        <div class="modal-content" style="width:700px;">
-            <span class="close-btn" onclick="closeModal('detail-modal')">&times;</span>
-            <h2 id="det-title" style="color:var(--sari);"></h2>
-            <img src="" id="det-img" style="width:100%; border-radius:10px; border:2px solid var(--sari); margin-bottom:15px;">
-            <div id="det-specs" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;"></div>
-            <a href="#" id="det-wa" target="_blank" class="btn" style="background:#25D366; color:white; display:block; text-align:center; text-decoration:none;">WhatsApp ile Yaz</a>
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('add-ad-modal')">&times;</span>
+            <h2>Yeni İlan Ver</h2>
+            <input type="text" id="car-brand" placeholder="Marka">
+            <input type="text" id="car-model" placeholder="Model">
+            <input type="number" id="car-year" placeholder="Yıl">
+            <input type="number" id="car-km" placeholder="Kilometre">
+            <input type="file" id="car-img" accept="image/*">
+            <button class="btn btn-orange" style="width:100%; margin-top:10px;" id="postAdBtn">Yayınla</button>
         </div>
     </div>
 
