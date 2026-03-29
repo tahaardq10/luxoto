@@ -1,18 +1,214 @@
-:root { --siyah: #121212; --koyu-siyah: #000; --sari: #FFD700; --turuncu: #FF8C00; --beyaz: #fff; --gri: #1e1e1e; }
-body { background: var(--siyah); color: var(--beyaz); font-family: sans-serif; margin: 0; }
-header { background: var(--koyu-siyah); padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--turuncu); }
-.logo { font-size: 3rem; font-weight: 900; color: var(--sari); cursor: pointer; }
-.logo span { color: var(--turuncu); }
-.social-links a { color: white; font-size: 2.5rem; margin-right: 15px; text-decoration: none; }
-.btn { padding: 12px 20px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-.btn-yellow { background: var(--sari); }
-.btn-orange { background: var(--turuncu); color: white; }
-.container { display: grid; grid-template-columns: 200px 1fr 250px; gap: 20px; padding: 20px; }
-.ilan-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
-.ilan-card { background: var(--gri); border-radius: 10px; border: 1px solid #333; overflow: hidden; cursor: pointer; }
-.ilan-card img { width: 100%; height: 150px; object-fit: cover; }
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 1000; }
-.modal-content { background: #1a1a1a; padding: 30px; border-radius: 15px; border: 2px solid var(--sari); width: 400px; position: relative; }
-#status-box { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: white; color: black; padding: 15px 30px; border-radius: 50px; display: none; font-weight: bold; z-index: 2000; }
-footer { background: black; padding: 30px; text-align: center; border-top: 2px solid var(--sari); }
-.footer-names { font-family: cursive; font-size: 1.5rem; color: var(--sari); }
+/* ==========================================================================
+   luxOTO PREMIUM CSS - ALTIN KURAL TASARIMI
+   ========================================================================== */
+
+:root {
+    --siyah: #121212;
+    --koyu-siyah: #000000;
+    --sari: #FFD700;
+    --turuncu: #FF8C00;
+    --beyaz: #ffffff;
+    --gri: #1e1e1e;
+    --border: 1px solid #333;
+    --shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+}
+
+body { 
+    background-color: var(--siyah); 
+    color: var(--beyaz); 
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* HEADER & LOGO */
+header { 
+    background-color: var(--koyu-siyah); 
+    padding: 25px 50px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    border-bottom: 5px solid var(--turuncu);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo { 
+    font-size: 4rem; 
+    font-weight: 900; 
+    color: var(--sari); 
+    text-shadow: 4px 4px 0px var(--turuncu); 
+    cursor: pointer; 
+    letter-spacing: -2px;
+    transition: 0.3s;
+}
+
+.logo span { color: var(--turuncu); text-shadow: 4px 4px 0px var(--sari); }
+.logo:hover { transform: scale(1.05); }
+
+/* SOSYAL MEDYA LOGOLARI */
+.social-links { display: flex; gap: 25px; align-items: center; }
+.social-links a { 
+    color: var(--beyaz); 
+    font-size: 3rem; 
+    transition: 0.3s ease; 
+}
+.social-links a:hover { 
+    color: var(--sari); 
+    transform: translateY(-5px); 
+}
+
+/* BUTONLAR */
+.auth-btns { display: flex; gap: 15px; }
+.btn { 
+    padding: 15px 30px; 
+    border: none; 
+    border-radius: 12px; 
+    font-weight: 800; 
+    font-size: 1rem;
+    cursor: pointer; 
+    transition: 0.3s; 
+    text-transform: uppercase;
+}
+.btn-yellow { background-color: var(--sari); color: var(--koyu-siyah); }
+.btn-orange { background-color: var(--turuncu); color: var(--beyaz); }
+.btn:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(255, 140, 0, 0.4); }
+
+/* ANA KONTEYNER */
+.container { 
+    display: grid; 
+    grid-template-columns: 280px 1fr 320px; 
+    gap: 30px; 
+    padding: 30px; 
+    max-width: 1800px;
+    margin: 0 auto;
+}
+
+/* SIDEBARLAR */
+aside { 
+    background: var(--gri); 
+    padding: 25px; 
+    border-radius: 20px; 
+    border: 1px solid #333;
+    height: fit-content;
+}
+
+.sidebar-left h3 { 
+    color: var(--sari); 
+    margin-bottom: 20px; 
+    border-bottom: 2px solid var(--turuncu);
+    padding-bottom: 10px;
+}
+
+.brand-list { list-style: none; }
+.brand-list li { 
+    padding: 15px; 
+    margin-bottom: 8px;
+    cursor: pointer; 
+    border-radius: 10px; 
+    transition: 0.3s;
+    font-weight: 600;
+}
+.brand-list li:hover { 
+    background: linear-gradient(90deg, var(--turuncu), var(--sari)); 
+    color: black; 
+}
+
+/* İLAN KARTLARI */
+.search-box input { 
+    width: 100%; 
+    padding: 20px; 
+    border-radius: 15px; 
+    border: 2px solid var(--turuncu); 
+    background: var(--koyu-siyah); 
+    color: white; 
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+}
+
+.ilan-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+    gap: 25px; 
+}
+
+.ilan-card { 
+    background: var(--gri); 
+    border-radius: 18px; 
+    overflow: hidden; 
+    border: var(--border); 
+    transition: 0.4s;
+}
+
+.ilan-card:hover { 
+    border-color: var(--sari); 
+    transform: scale(1.03);
+    box-shadow: var(--shadow);
+}
+
+.ilan-card img { width: 100%; height: 200px; object-fit: cover; }
+.ilan-info { padding: 20px; }
+.ilan-info h4 { color: var(--sari); font-size: 1.4rem; margin-bottom: 10px; }
+.ilan-info p { color: #aaa; font-weight: 500; }
+
+/* MODALLAR */
+.modal-content { 
+    background: #111; 
+    padding: 40px; 
+    border-radius: 25px; 
+    border: 3px solid var(--sari); 
+    box-shadow: 0 0 50px rgba(255, 215, 0, 0.2);
+}
+
+.form-group input, select { 
+    width: 100%; 
+    padding: 15px; 
+    margin-bottom: 15px; 
+    background: #000; 
+    border: 1px solid #444; 
+    color: white; 
+    border-radius: 10px; 
+}
+
+/* FOOTER */
+footer { 
+    background: var(--koyu-siyah); 
+    padding: 50px; 
+    text-align: center; 
+    border-top: 3px solid var(--sari);
+    margin-top: 50px;
+}
+
+.footer-names { 
+    font-size: 2rem; 
+    color: var(--sari); 
+    margin: 20px 0;
+    font-weight: 900;
+}
+
+/* DURUM KUTUSU */
+#status-box {
+    background: var(--beyaz);
+    color: var(--koyu-siyah);
+    padding: 20px 40px;
+    border-radius: 50px;
+    box-shadow: var(--shadow);
+    font-size: 1.1rem;
+}
+
+.google-btn {
+    background: white;
+    color: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+}
