@@ -1,3 +1,77 @@
+:root {
+    --siyah:#121212;
+    --koyu:#000;
+    --sari:#FFD700;
+    --turuncu:#FF8C00;
+    --beyaz:#fff;
+    --gri:#333;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:sans-serif;
+}
+
+body{
+    background:var(--siyah);
+    color:white;
+}
+
+/* HEADER */
+header{
+    display:flex;
+    justify-content:space-between;
+    padding:15px;
+    background:black;
+    border-bottom:3px solid orange;
+}
+
+.logo{
+    font-size:2.5rem;
+    color:gold;
+}
+
+/* BUTTON */
+.btn{
+    padding:10px;
+    border:none;
+    cursor:pointer;
+    border-radius:5px;
+}
+
+.btn-yellow{
+    background:gold;
+    color:black;
+}
+
+.btn-orange{
+    background:orange;
+    color:white;
+}
+
+/* MAIN */
+.main{
+    padding:20px;
+}
+
+/* CARD */
+.card{
+    background:#333;
+    padding:10px;
+    border-radius:10px;
+    margin-top:10px;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:scale(1.03);
+    border:1px solid gold;
+}
+
+/* MODAL */
 .modal{
     position:fixed;
     top:0;
