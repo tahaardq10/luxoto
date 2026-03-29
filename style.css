@@ -1,101 +1,78 @@
-:root {
-    --siyah:#121212;
-    --koyu:#000;
-    --sari:#FFD700;
-    --turuncu:#FF8C00;
-    --beyaz:#fff;
-    --gri:#333;
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCacVmtIT1Y0NGHy43VJQf8CZ8x47Ju5M4",
+  authDomain: "luxoto-19d55.firebaseapp.com",
+  projectId: "luxoto-19d55",
+  storageBucket: "luxoto-19d55.firebasestorage.app",
+  messagingSenderId: "671208774332",
+  appId: "1:671208774332:web:37f9938c52cd0db5f9ceb9"
+};
+
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+// MODAL
+window.openModal = (id)=>{
+    document.getElementById(id).style.display="flex";
+};
+
+// LOGIN
+window.login = async ()=>{
+    const email=document.getElementById('email').value;
+    const pass=document.getElementById('pass').value;
+
+    try{
+        await signInWithEmailAndPassword(auth,email,pass);
+        alert("Giriş başarılı 🔥");
+    }catch(e){
+        alert("Hata: "+e.message);
+    }
+};
+
+// ADD AD
+window.addAd = async ()=>{
+    const marka=document.getElementById('marka').value;
+    const model=document.getElementById('model').value;
+
+    await addDoc(collection(db,"ads"),{
+        marka,model,created:Date.now()
+    });
+
+    loadAds();
+    alert("İlan eklendi 🚀");
+};
+
+// LOAD ADS
+async function loadAds(){
+    const querySnapshot = await getDocs(collection(db,"ads"));
+    const container=document.getElementById('ads');
+    container.innerHTML="";
+
+    querySnapshot.forEach(doc=>{
+        const ad=doc.data();
+
+        container.innerHTML+=`
+        <div class="card">
+            <h3>${ad.marka} ${ad.model}</h3>
+        </div>`;
+    });
 }
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:sans-serif;
-}
+// SEARCH
+window.searchAds = (val)=>{
+    val=val.toLowerCase();
 
-body{
-    background:var(--siyah);
-    color:white;
-}
+    document.querySelectorAll(".card").forEach(c=>{
+        c.style.display = c.innerText.toLowerCase().includes(val) ? "block" : "none";
+    });
+};
 
-/* HEADER */
-header{
-    display:flex;
-    justify-content:space-between;
-    padding:15px;
-    background:black;
-    border-bottom:3px solid orange;
-}
-
-.logo{
-    font-size:2.5rem;
-    color:gold;
-}
-
-/* BUTTON */
-.btn{
-    padding:10px;
-    border:none;
-    cursor:pointer;
-    border-radius:5px;
-}
-
-.btn-yellow{
-    background:gold;
-    color:black;
-}
-
-.btn-orange{
-    background:orange;
-    color:white;
-}
-
-/* MAIN */
-.main{
-    padding:20px;
-}
-
-/* CARD */
-.card{
-    background:#333;
-    padding:10px;
-    border-radius:10px;
-    margin-top:10px;
-    cursor:pointer;
-    transition:0.3s;
-}
-
-.card:hover{
-    transform:scale(1.03);
-    border:1px solid gold;
-}
-
-/* MODAL */
-.modal{
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:rgba(0,0,0,0.8);
-    display:none;
-    justify-content:center;
-    align-items:center;
-}
-
-.modal-box{
-    background:#222;
-    padding:20px;
-    border-radius:10px;
-    width:300px;
-}
-
-input{
-    width:100%;
-    padding:10px;
-    margin-bottom:10px;
-    background:#333;
-    color:white;
-    border:none;
-}
+// START
+loadAds();
