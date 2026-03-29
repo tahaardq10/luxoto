@@ -1,177 +1,111 @@
-// VERİ DEPOLAMA (LocalStorage ile kalıcılık sağlanıyor)
-let ads = JSON.parse(localStorage.getItem('luxOTO_ads')) || [];
-let users = JSON.parse(localStorage.getItem('luxOTO_users')) || [];
-let currentUser = JSON.parse(localStorage.getItem('luxOTO_session')) || null;
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-window.onload = () => {
-    if(currentUser) updateUI(true);
-    renderAds(ads);
-    updateBrandSidebar();
+const firebaseConfig = {
+  apiKey: "AIzaSyCacVmtIT1Y0NGHy43VJQf8CZ8x47Ju5M4",
+  authDomain: "luxoto-19d55.firebaseapp.com",
+  projectId: "luxoto-19d55",
+  storageBucket: "luxoto-19d55.firebasestorage.app",
+  messagingSenderId: "671208774332",
+  appId: "1:671208774332:web:37f9938c52cd0db5f9ceb9"
 };
 
-// MODAL KONTROLLERİ
-function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
 
-// BAŞARI BİLDİRİMİ
-function showStatus(text, success = true) {
+// ELEMENTLER
+const mainAds = document.getElementById('main-ads');
+const sideAds = document.getElementById('side-ads');
+
+// MODAL AÇ/KAPA (Global window nesnesine ekliyoruz çünkü modül kullanıyoruz)
+window.openModal = (id) => document.getElementById(id).style.display = 'flex';
+window.closeModal = (id) => document.getElementById(id).style.display = 'none';
+
+function showStatus(text) {
     const box = document.getElementById('status-box');
-    const icon = document.getElementById('status-icon');
     document.getElementById('status-text').innerText = text;
-    icon.className = success ? "fas fa-check-circle" : "fas fa-times-circle";
-    icon.style.color = success ? "#2ecc71" : "#e74c3c";
     box.style.display = 'flex';
-    setTimeout(() => { box.style.display = 'none'; }, 2500);
+    setTimeout(() => box.style.display = 'none', 2500);
 }
 
-// KAYIT VE GİRİŞ
-function signup() {
-    const name = document.getElementById('reg-name').value;
-    const email = document.getElementById('reg-email').value;
-    const phone = document.getElementById('reg-phone').value;
-    const pass = document.getElementById('reg-pass').value;
-
-    if(!name || !email || !pass) return alert("Eksik alan bırakmayın!");
-
-    const user = { name, email, phone, pass, pic: 'https://via.placeholder.com/120/333/FFD700?text=Profil' };
-    users.push(user);
-    localStorage.setItem('luxOTO_users', JSON.stringify(users));
-    showStatus("Kayıt Başarılı!");
-    closeModal('signup-modal');
-}
-
-function login() {
-    const mail = document.getElementById('login-email').value;
-    const pass = document.getElementById('login-pass').value;
-    const user = users.find(u => u.email === mail && u.pass === pass);
-
-    if(user) {
-        currentUser = user;
-        localStorage.setItem('luxOTO_session', JSON.stringify(user));
-        updateUI(true);
+// GOOGLE İLE GİRİŞ
+document.getElementById('googleLoginBtn').onclick = async () => {
+    try {
+        await signInWithPopup(auth, provider);
         closeModal('login-modal');
-        showStatus("Giriş Başarılı!");
+        showStatus("Google ile giriş başarılı!");
+    } catch (error) {
+        console.error(error);
+        alert("Giriş başarısız!");
+    }
+};
+
+// OTURUM DURUMU KONTROLÜ
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        document.getElementById('auth-section').style.display = 'none';
+        document.getElementById('user-section').style.display = 'flex';
     } else {
-        alert("Hatalı e-posta veya şifre!");
+        document.getElementById('auth-section').style.display = 'flex';
+        document.getElementById('user-section').style.display = 'none';
     }
-}
+});
 
-function updateUI(isLogin) {
-    document.getElementById('auth-section').style.display = isLogin ? 'none' : 'flex';
-    document.getElementById('user-section').style.display = isLogin ? 'flex' : 'none';
-    if(isLogin) {
-        document.getElementById('prof-name').value = currentUser.name;
-        document.getElementById('prof-mail').value = currentUser.email;
-        document.getElementById('prof-img-display').src = currentUser.pic;
-    }
-}
-
-function logout() {
-    currentUser = null;
-    localStorage.removeItem('luxOTO_session');
-    location.reload();
-}
-
-// İLAN VERME (Dosya okuma dahil)
-function checkAuthForAd() {
-    if(!currentUser) {
-        alert("Önce Giriş Yapmalısın!");
-        openModal('login-modal');
-    } else {
-        openModal('add-ad-modal');
-    }
-}
-
-function postAd() {
+// İLAN YAYINLA (Firebase Firestore'a Kaydetme)
+document.getElementById('postAdBtn').onclick = async () => {
+    const brand = document.getElementById('car-brand').value;
+    const model = document.getElementById('car-model').value;
     const file = document.getElementById('car-img').files[0];
-    if(!file) return alert("Fotoğraf seçmelisiniz!");
+
+    if(!brand || !file) return alert("Eksik bilgi!");
 
     const reader = new FileReader();
-    reader.onload = function(e) {
-        const newAd = {
-            id: Date.now(),
-            brand: document.getElementById('car-brand').value,
-            model: document.getElementById('car-model').value,
+    reader.onload = async (e) => {
+        const adData = {
+            brand,
+            model,
             year: document.getElementById('car-year').value,
             km: document.getElementById('car-km').value,
-            status: document.getElementById('car-status').value,
-            damage: document.getElementById('car-damage').value,
-            hp: document.getElementById('car-hp').value,
             img: e.target.result,
-            sellerPhone: currentUser.phone
+            phone: auth.currentUser.email, // Şimdilik maili alıyoruz
+            createdAt: Date.now()
         };
-        ads.unshift(newAd);
-        localStorage.setItem('luxOTO_ads', JSON.stringify(ads));
-        renderAds(ads);
-        updateBrandSidebar();
+        await addDoc(collection(db, "ads"), adData);
+        showStatus("İlan başarıyla yüklendi!");
         closeModal('add-ad-modal');
-        showStatus("İlanınız Yayınlandı!");
+        fetchAds();
     };
     reader.readAsDataURL(file);
-}
+};
 
-// GÖRÜNTÜLEME VE ARAMA
-function renderAds(data) {
-    const main = document.getElementById('main-ads');
-    const side = document.getElementById('side-ads');
-    main.innerHTML = ''; side.innerHTML = '';
-
-    data.forEach(ad => {
-        const cardHtml = `
-            <div class="ilan-card" onclick="showDetail(${ad.id})">
+// İLANLARI ÇEK
+async function fetchAds() {
+    mainAds.innerHTML = '';
+    const q = query(collection(db, "ads"), orderBy("createdAt", "desc"));
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+        const ad = doc.data();
+        const card = `
+            <div class="ilan-card" onclick="showAdDetail('${ad.brand} ${ad.model}', '${ad.img}', '${ad.year}', '${ad.km}')">
                 <img src="${ad.img}">
-                <div class="ilan-info">
-                    <h4>${ad.brand} ${ad.model}</h4>
+                <div style="padding:10px;">
+                    <h4 style="color:var(--sari);">${ad.brand} ${ad.model}</h4>
                     <p>${ad.year} | ${ad.km} KM</p>
                 </div>
             </div>
         `;
-        main.innerHTML += cardHtml;
-        side.innerHTML += cardHtml;
+        mainAds.innerHTML += card;
     });
 }
 
-function searchAds() {
-    const val = document.getElementById('searchInput').value.toLowerCase();
-    const filtered = ads.filter(a => a.brand.toLowerCase().includes(val) || a.model.toLowerCase().includes(val));
-    renderAds(filtered);
-}
-
-function filterByBrand(brandName) {
-    if(brandName === 'All') renderAds(ads);
-    else renderAds(ads.filter(a => a.brand === brandName));
-}
-
-function updateBrandSidebar() {
-    const list = document.getElementById('brand-filters');
-    const brands = [...new Set(ads.map(a => a.brand))];
-    list.innerHTML = `<li onclick="filterByBrand('All')">Tüm İlanlar</li>`;
-    brands.forEach(b => {
-        list.innerHTML += `<li onclick="filterByBrand('${b}')">${b}</li>`;
-    });
-}
-
-function showDetail(id) {
-    const ad = ads.find(a => a.id === id);
-    document.getElementById('det-title').innerText = ad.brand + " " + ad.model;
-    document.getElementById('det-img').src = ad.img;
-    document.getElementById('det-specs').innerHTML = `
-        <div class="spec-item"><b>Yıl:</b> ${ad.year}</div>
-        <div class="spec-item"><b>KM:</b> ${ad.km}</div>
-        <div class="spec-item"><b>Durum:</b> ${ad.status}</div>
-        <div class="spec-item"><b>Güç:</b> ${ad.hp} HP</div>
-        <div class="spec-item"><b>Hasar:</b> ${ad.damage}</div>
-    `;
-    document.getElementById('det-wa').href = `https://wa.me/90${ad.sellerPhone}`;
+window.showAdDetail = (title, img, year, km) => {
+    document.getElementById('det-title').innerText = title;
+    document.getElementById('det-img').src = img;
+    document.getElementById('det-specs').innerHTML = `<div><b>Yıl:</b> ${year}</div><div><b>KM:</b> ${km}</div>`;
     openModal('detail-modal');
-}
+};
 
-function changeProfilePic(e) {
-    const reader = new FileReader();
-    reader.onload = (event) => {
-        currentUser.pic = event.target.result;
-        document.getElementById('prof-img-display').src = event.target.result;
-        localStorage.setItem('luxOTO_session', JSON.stringify(currentUser));
-    };
-    reader.readAsDataURL(e.target.files[0]);
-}
+fetchAds();
