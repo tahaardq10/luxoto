@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
     <div id="status-box">
         <i id="status-icon" class="fas fa-check-circle"></i>
         <span id="status-text">İşlem Başarılı!</span>
@@ -17,15 +16,13 @@
         <div class="logo" onclick="location.reload()">lux<span>OTO</span></div>
         <div class="header-right">
             <div class="social-links">
-                <a href="https://instagram.com/taha.bozdemir10" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
-                <a href="https://wa.me/905526085730" target="_blank" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                <a href="https://instagram.com/taha.bozdemir10" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="https://wa.me/905526085730" target="_blank"><i class="fab fa-whatsapp"></i></a>
             </div>
-            
             <div class="auth-btns" id="auth-section">
                 <button class="btn btn-yellow" onclick="openModal('login-modal')">Giriş Yap</button>
                 <button class="btn btn-orange" onclick="openModal('signup-modal')">Kaydol</button>
             </div>
-            
             <div class="auth-btns" id="user-section" style="display: none;">
                 <button class="btn btn-orange" onclick="checkAuthForAd()">+ İlan Ver</button>
                 <button class="btn btn-yellow" onclick="openModal('profile-modal')">Profilim</button>
@@ -37,18 +34,15 @@
         <aside class="sidebar-left">
             <h3>Markalar</h3>
             <ul class="brand-list" id="brand-filters">
-                <li onclick="renderAds(ads)">Tüm İlanlar</li>
-                </ul>
+                <li onclick="location.reload()">Tüm İlanlar</li>
+            </ul>
         </aside>
-
         <main class="content-main">
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Marka veya model ara..." onkeyup="searchAds()">
+                <input type="text" id="searchInput" placeholder="Marka veya model ara...">
             </div>
-            <div class="ilan-grid" id="main-ads">
-                </div>
+            <div class="ilan-grid" id="main-ads"></div>
         </main>
-
         <aside class="sidebar-right">
             <h3 style="color: var(--sari); margin-bottom: 15px; text-align: center;">Öne Çıkanlar</h3>
             <div id="side-ads"></div>
@@ -56,11 +50,10 @@
     </div>
 
     <footer>
-        <div style="margin-bottom: 15px;"><i class="fas fa-map-marker-alt" style="color: var(--turuncu);"></i> Şehir: Balıkesir</div>
+        <div style="margin-bottom: 15px;"><i class="fas fa-map-marker-alt"></i> Şehir: Balıkesir</div>
         <div class="footer-names">
-            Taha Arda Bozdemir <span>|</span> Muhammed Fettah Karaaslan <span>|</span> <b style="color:white; font-family:sans-serif; font-size:1.2rem;">Kağan Arda Sargın</b>
+            Taha Arda Bozdemir <span>|</span> Muhammed Fettah Karaaslan <span>|</span> <b>Kağan Arda Sargın</b>
         </div>
-        <p style="color: #444; font-size: 0.8rem; margin-top: 10px;">© 2026 luxOTO. Tüm hakları saklıdır.</p>
     </footer>
 
     <div class="modal-overlay" id="login-modal">
@@ -69,21 +62,11 @@
             <h2>Giriş Yap</h2>
             <div class="form-group"><input type="email" id="login-email" placeholder="E-posta"></div>
             <div class="form-group"><input type="password" id="login-pass" placeholder="Şifre"></div>
-            <button class="btn btn-orange" style="width:100%;" onclick="login()">Giriş Yap</button>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="signup-modal">
-        <div class="modal-content auth-modal">
-            <span class="close-btn" onclick="closeModal('signup-modal')">&times;</span>
-            <h2>Hesap Aç</h2>
-            <div class="form-group"><input type="text" id="reg-name" placeholder="İsim Soyisim"></div>
-            <div class="form-group"><input type="email" id="reg-email" placeholder="E-posta"></div>
-            <div class="form-group"><input type="tel" id="reg-phone" placeholder="Telefon (5XXXXXXXXX)"></div>
-            <div class="form-group"><input type="password" id="reg-pass" placeholder="Şifre"></div>
-            <button class="btn btn-orange" style="width:100%; margin-bottom:15px;" onclick="signup()">Kaydol</button>
+            <button class="btn btn-orange" style="width:100%;" id="loginBtn">Giriş Yap</button>
             <div class="divider">VEYA</div>
-            <button class="btn google-btn"><img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" width="18"> Google ile Kaydol</button>
+            <button class="btn google-btn" id="googleLoginBtn">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" width="18"> Google ile Giriş
+            </button>
         </div>
     </div>
 
@@ -101,23 +84,7 @@
                 <input type="text" id="car-hp" placeholder="Motor Gücü">
                 <input type="file" id="car-img" accept="image/*">
             </div>
-            <button class="btn btn-orange" style="width:100%; margin-top:20px;" onclick="postAd()">İlanı Yayınla</button>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="profile-modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('profile-modal')">&times;</span>
-            <h2>Profilim</h2>
-            <div class="profile-pic-container">
-                <label for="prof-upload">
-                    <img src="https://via.placeholder.com/120/333/FFD700?text=Profil" id="prof-img-display">
-                </label>
-                <input type="file" id="prof-upload" style="display:none" onchange="changeProfilePic(event)">
-            </div>
-            <div class="form-group"><input type="text" id="prof-name" readonly></div>
-            <div class="form-group"><input type="text" id="prof-mail" readonly></div>
-            <button class="btn" style="width:100%; background:red; color:white;" onclick="logout()">Çıkış Yap</button>
+            <button class="btn btn-orange" style="width:100%; margin-top:20px;" id="postAdBtn">İlanı Yayınla</button>
         </div>
     </div>
 
@@ -125,14 +92,12 @@
         <div class="modal-content" style="width:700px;">
             <span class="close-btn" onclick="closeModal('detail-modal')">&times;</span>
             <h2 id="det-title" style="color:var(--sari);"></h2>
-            <img src="" id="det-img" class="detail-img-large">
-            <div class="spec-list" id="det-specs"></div>
-            <a href="#" id="det-wa" target="_blank" class="wa-contact-btn">
-                <i class="fab fa-whatsapp"></i> Satıcıya Yaz
-            </a>
+            <img src="" id="det-img" style="width:100%; border-radius:10px; border:2px solid var(--sari); margin-bottom:15px;">
+            <div id="det-specs" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;"></div>
+            <a href="#" id="det-wa" target="_blank" class="btn" style="background:#25D366; color:white; display:block; text-align:center; text-decoration:none;">WhatsApp ile Yaz</a>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
