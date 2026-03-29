@@ -1,78 +1,51 @@
-<!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>luxOTO | Premium</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>luxOTO</title>
+
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 </head>
+
 <body>
 
-    <div id="status-box">
-        <span id="status-text"></span>
-    </div>
+<header>
+<div class="logo">luxOTO</div>
+<div>
+<button class="btn btn-yellow" onclick="openModal('login')">Giriş</button>
+<button class="btn btn-orange" onclick="openModal('add')">İlan Ver</button>
+</div>
+</header>
 
-    <header>
-        <div class="logo" onclick="location.reload()">lux<span>OTO</span></div>
-        <div class="header-right">
-            <div class="social-links">
-                <a href="https://instagram.com/taha.bozdemir10" target="_blank"><i class="fab fa-instagram"></i></a>
-                <a href="https://wa.me/905526085730" target="_blank"><i class="fab fa-whatsapp"></i></a>
-            </div>
-            <div id="auth-section">
-                <button class="btn btn-yellow" onclick="openModal('login-modal')">Giriş Yap</button>
-            </div>
-            <div id="user-section" style="display: none;">
-                <button class="btn btn-orange" onclick="openModal('add-ad-modal')">+ İlan Ver</button>
-                <button id="logoutBtn" class="btn btn-yellow">Çıkış</button>
-            </div>
-        </div>
-    </header>
+<div class="main">
+<div>
+<input type="text" placeholder="Ara..." onkeyup="searchAds(this.value)">
+<div id="ads"></div>
+</div>
+</div>
 
-    <div class="container">
-        <aside class="sidebar">
-            <h3>Markalar</h3>
-            <ul id="brand-filters" class="brand-list">
-                <li onclick="location.reload()">Tüm İlanlar</li>
-            </ul>
-        </aside>
+<!-- LOGIN -->
+<div class="modal" id="login">
+<div class="modal-box">
+<h3>Giriş</h3>
+<input id="email" placeholder="Email">
+<input id="pass" type="password" placeholder="Şifre">
+<button class="btn btn-orange" onclick="login()">Giriş</button>
+</div>
+</div>
 
-        <main class="main-content">
-            <input type="text" id="searchInput" class="search-bar" placeholder="Araba ara...">
-            <div id="main-ads" class="ilan-grid">
-                </div>
-        </main>
-    </div>
+<!-- ADD -->
+<div class="modal" id="add">
+<div class="modal-box">
+<h3>İlan Ver</h3>
+<input id="marka" placeholder="Marka">
+<input id="model" placeholder="Model">
+<button class="btn btn-orange" onclick="addAd()">Paylaş</button>
+</div>
+</div>
 
-    <footer>
-        <div class="footer-names">Taha Arda Bozdemir | Muhammed Fettah Karaaslan | <b>Kağan Arda Sargın</b></div>
-        <p>Balıkesir, 2026</p>
-    </footer>
-
-    <div class="modal-overlay" id="login-modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('login-modal')">&times;</span>
-            <h2>luxOTO Giriş</h2>
-            <button class="btn google-btn" id="googleLoginBtn">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" width="20"> Google ile Giriş
-            </button>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="add-ad-modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('add-ad-modal')">&times;</span>
-            <h2>Yeni İlan Ver</h2>
-            <input type="text" id="car-brand" placeholder="Marka">
-            <input type="text" id="car-model" placeholder="Model">
-            <input type="number" id="car-year" placeholder="Yıl">
-            <input type="number" id="car-km" placeholder="Kilometre">
-            <input type="file" id="car-img" accept="image/*">
-            <button class="btn btn-orange" style="width:100%; margin-top:10px;" id="postAdBtn">Yayınla</button>
-        </div>
-    </div>
-
-    <script type="module" src="script.js"></script>
+<script type="module" src="script.js"></script>
 </body>
 </html>
